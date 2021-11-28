@@ -26,7 +26,6 @@ steps:
 
   - name: build
     image: node:14.18.1
-    privileged: true
     volumes:
       - name: cache
         path: /cache
@@ -39,7 +38,6 @@ steps:
 
   - name: build packages
     image: alpine:3.14.3
-    privileged: true
     volumes:
       - name: dist
         path: /drone/src/dist
