@@ -1,2 +1,6 @@
-# wgrest-app
-WireGuard REST API Web UI Application
+wgrest-webapp
+---
+
+WireGuard REST API Web UI Application for [WGRest](https://github.com/suquant/wgrest) 
+
+

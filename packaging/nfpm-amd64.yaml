@@ -1,0 +1,11 @@
+name: "wgrest-webapp"
+arch: "amd64"
+platform: "linux"
+version: "${VERSION}"
+maintainer: ForestVPN.com
+depends:
+  - wgrest
+contents:
+  - src: dist/public
+    dst: /var/lib/wgrest/public
+
