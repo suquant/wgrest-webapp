@@ -1,50 +1,47 @@
 <template>
     <el-card class="box-card" shadow="hover">
-      <div slot="header" class="card__header">
-        <span>public key: {{ item.url_safe_public_key }}</span>
-        <i class="el-icon-setting" @click="drawer = true"></i>
-      </div>
-      <div class="text item">
-        <div class="info__peer">
-          <span>receive: {{ item.receive_bytes }}</span>
-          <span>transmit: {{ item.transmit_bytes }}</span>
-        </div>
-      </div>
-      <div class="peer__buttons">
-        <el-button
-          type="primary"
-          @click="getQrCode"
-        >
-          qr code
-        </el-button>
-        <el-button
-          icon="el-icon-download"
-          type="info"
-          @click="getQuickConf"
-        >
-          quick.conf
-        </el-button>
-      </div>
+     <div @click="openPeerModal">
+       <div slot="header" class="card__header">
+         <span>public key: {{ item.url_safe_public_key }}</span>
+         <i class="el-icon-setting" @click="openPeerModal"></i>
+       </div>
+       <div class="text item">
+         <div class="info__peer">
+           <span>receive: {{ item.receive_bytes }}</span>
+           <span>transmit: {{ item.transmit_bytes }}</span>
+         </div>
+       </div>
+       <div class="peer__buttons">
+         <el-button
+           type="primary"
+           @click="getQrCode"
+         >
+           qr code
+         </el-button>
+         <el-button
+           icon="el-icon-download"
+           type="info"
+           @click="getQuickConf"
+         >
+           quick.conf
+         </el-button>
+       </div>
+     </div>
       <el-drawer
-        :title="`${item.url_safe_public_key}`"
+        :title="`${editedPeer.url_safe_public_key}`"
         :visible.sync="drawer"
         direction="rtl"
         >
         <div class="detail__info">
 
-          <span>url_safe_public_key:</span>
-          <el-input v-model="item.url_safe_public_key" class="detail__info-input"></el-input>
           <span>public_key</span>
-          <el-input v-model="item.public_key" class="detail__info-input"></el-input>
-          <span>last_handshake_time: {{ item.last_handshake_time | date }}</span>
+          <el-input v-model="editedPeer.public_key" class="detail__info-input"></el-input>
           <span>persistent_keepalive_interval</span>
-          <el-input v-model="item.persistent_keepalive_interval" class="detail__info-input"></el-input>
-          <span>receive_bytes: {{ item.receive_bytes }}</span>
-          <span>transmit_bytes: {{ item.transmit_bytes }}</span>
+          <el-input v-model="editedPeer.persistent_keepalive_interval" class="detail__info-input"></el-input>
           <span>endpoint:</span>
-          <el-input v-model="item.endpoint" class="detail__info-input"></el-input>
+          <el-input v-model="editedPeer.endpoint" class="detail__info-input"></el-input>
           <span>allowed_ips</span>
-          <el-input v-model="item.allowed_ips" class="detail__info-input"></el-input>
+          <el-input type="textarea" rows="4" v-model="editedPeer.allowed_ips" class="detail__info-input"></el-input>
         </div>
        <div class="detail__info-buttons">
          <el-button type="primary" @click="savePeer">Save</el-button>
@@ -89,6 +86,26 @@ import { deviceApi } from '@/api/interface'
 export default class peerItem extends Vue {
   @Prop({ default: {} }) item!: Peer
 
+  private editedPeer: Peer = {
+    public_key: '',
+
+    url_safe_public_key: '',
+
+    preshared_key: '',
+
+    allowed_ips: '',
+
+    last_handshake_time: '',
+
+    persistent_keepalive_interval: '',
+
+    endpoint: '',
+
+    receive_bytes: '',
+
+    transmit_bytes: '',
+  }
+
   private drawer = false
   private dialogVisible = false
 
@@ -111,27 +128,52 @@ export default class peerItem extends Vue {
   }
 
   private async savePeer(): Promise<void> {
-    const answer = await deviceApi.updateDevicePeer(this.$route.params.id, this.item.url_safe_public_key, {
-      ...this.item,
-      allowed_ips: this.item.allowed_ips.split(',')
+    await deviceApi.updateDevicePeer(this.$route.params.id, this.editedPeer.url_safe_public_key, {
+      ...this.editedPeer,
+      allowed_ips: this.editedPeer.allowed_ips.split(',').map((item: string) => item.replace(/\n|\r/g, ''))
     })
 
-    console.log(answer)
+    this.$message({
+      type: 'success',
+      message: 'Peer updated'
+    })
   }
 
   private async deletePeer(): Promise<void> {
-    const answer = await deviceApi.deleteDevicePeer(this.$route.params.id, this.item.url_safe_public_key)
+    await this.$msgbox({
+      title: 'Delete peer',
+      message: `Delete ${this.item.url_safe_public_key} ?`,
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      beforeClose: async (action, instance, done) => {
+        if (action === 'confirm') {
+          instance.confirmButtonLoading = true;
+          instance.confirmButtonText = 'Loading...';
+          const answer = await deviceApi.deleteDevicePeer(this.$route.params.id, this.item.url_safe_public_key)
 
-    if (answer.status.toString().startsWith('2')) {
-      this.$message({
-        type: 'success',
-        message: 'Peer deleted'
-      })
-    }
+          if (answer.status.toString().startsWith('2')) {
+            this.$message({
+              type: 'success',
+              message: 'Peer deleted'
+            })
+          }
 
-    this.$emit('delete', this.item.public_key)
+          done()
+          instance.confirmButtonLoading = false;
+          this.$emit('delete', this.item.public_key)
 
-    this.drawer = false
+          this.drawer = false
+        } else {
+          done();
+        }
+      }
+    })
+  }
+
+  private openPeerModal() {
+    this.editedPeer = JSON.parse(JSON.stringify(this.item))
+    this.drawer = true;
   }
 }
 </script>
@@ -161,6 +203,7 @@ export default class peerItem extends Vue {
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
+  margin-bottom: 20px;
 }
 
 .qr__code {
@@ -203,7 +246,7 @@ export default class peerItem extends Vue {
   margin-top: 30px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .qr__dialog {

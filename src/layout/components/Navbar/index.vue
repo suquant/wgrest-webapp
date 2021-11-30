@@ -16,9 +16,7 @@
         type="primary"
         icon="el-icon-refresh"
         @click="updateList"
-      >
-        Update List
-      </el-button>
+      ></el-button>
       <el-button
         class="navbar__button"
         type="primary"
@@ -151,7 +149,9 @@ export default class extends Vue {
 .navbar {
   height: 50px;
   overflow: hidden;
-  position: relative;
+  position: fixed;
+  z-index: 100;
+  width: calc(100% - 54px);
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
 
