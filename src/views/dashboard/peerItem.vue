@@ -14,14 +14,14 @@
        <div class="peer__buttons">
          <el-button
            type="primary"
-           @click="getQrCode"
+           @click.stop="getQrCode"
          >
            qr code
          </el-button>
          <el-button
            icon="el-icon-download"
            type="info"
-           @click="getQuickConf"
+           @click.stop="getQuickConf"
          >
            quick.conf
          </el-button>

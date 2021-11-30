@@ -151,7 +151,7 @@ export default class extends Vue {
   overflow: hidden;
   position: fixed;
   z-index: 100;
-  width: calc(100% - 54px);
+  width: calc(100vw - 54px);
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
 

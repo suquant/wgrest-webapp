@@ -2,7 +2,7 @@
   <div class="peer__container">
     <div class="peer__headers">
       <div class="peer__search">
-        <el-input placeholder="Search" v-model="queries.q" />
+        <el-input placeholder="Search" v-model="queries.q" class="peer__search-input"/>
         <el-button type="primary" @click="getPeerList">Search</el-button>
       </div>
       <el-select
@@ -183,5 +183,9 @@ export default class extends Vue {
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.peer__search-input {
+  width: 320px;
 }
 </style>
