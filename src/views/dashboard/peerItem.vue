@@ -100,7 +100,7 @@ export default class peerItem extends Vue {
 
     persistent_keepalive_interval: '',
 
-    endpoint: '',
+    endpoint: ''
 
   }
 
@@ -151,10 +151,10 @@ export default class peerItem extends Vue {
       showCancelButton: true,
       confirmButtonText: 'Confirm',
       cancelButtonText: 'Cancel',
-      beforeClose: async (action, instance, done) => {
+      beforeClose: async(action, instance, done) => {
         if (action === 'confirm') {
-          instance.confirmButtonLoading = true;
-          instance.confirmButtonText = 'Loading...';
+          instance.confirmButtonLoading = true
+          instance.confirmButtonText = 'Loading...'
           const answer = await deviceApi.deleteDevicePeer(this.$route.params.id, this.item.url_safe_public_key)
 
           if (answer.status.toString().startsWith('2')) {
@@ -165,12 +165,12 @@ export default class peerItem extends Vue {
           }
 
           done()
-          instance.confirmButtonLoading = false;
+          instance.confirmButtonLoading = false
           this.$emit('delete', this.item.public_key)
 
           this.drawer = false
         } else {
-          done();
+          done()
         }
       }
     })
@@ -185,11 +185,11 @@ export default class peerItem extends Vue {
 
     if (this.editedPeer.allowed_ips.length) {
       this.editedPeer.allowed_ips = this.editedPeer.allowed_ips.join(',')
-    }else {
+    } else {
       this.editedPeer.allowed_ips = ''
     }
 
-    this.drawer = true;
+    this.drawer = true
   }
 }
 </script>
