@@ -14,33 +14,36 @@
        <div class="peer__buttons">
          <el-button
            type="primary"
-           @click="getQrCode"
+           @click.stop="getQrCode"
          >
            qr code
          </el-button>
          <el-button
            icon="el-icon-download"
            type="info"
-           @click="getQuickConf"
+           @click.stop="getQuickConf"
          >
            quick.conf
          </el-button>
        </div>
      </div>
       <el-drawer
-        :title="`${editedPeer.url_safe_public_key}`"
+        :title="`${item.url_safe_public_key}`"
         :visible.sync="drawer"
         direction="rtl"
         >
         <div class="detail__info">
 
-          <span>public_key</span>
-          <el-input v-model="editedPeer.public_key" class="detail__info-input"></el-input>
-          <span>persistent_keepalive_interval</span>
+          <span>Private key</span>
+          <el-input v-model="editedPeer.private_key" class="detail__info-input"></el-input>
+
+          <span>Public key</span>
+          <el-input v-model="editedPeer.public_key" class="detail__info-input" :disabled="editedPeer.private_key.length > 0"></el-input>
+          <span>Persistent keepalive interval</span>
           <el-input v-model="editedPeer.persistent_keepalive_interval" class="detail__info-input"></el-input>
           <span>endpoint:</span>
           <el-input v-model="editedPeer.endpoint" class="detail__info-input"></el-input>
-          <span>allowed_ips</span>
+          <span>Allowed ips</span>
           <el-input type="textarea" rows="4" v-model="editedPeer.allowed_ips" class="detail__info-input"></el-input>
         </div>
        <div class="detail__info-buttons">
@@ -62,7 +65,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { Peer } from 'wgrest/dist/models'
+import { Peer, PeerCreateOrUpdateRequest } from 'wgrest/dist/models'
 import { deviceApi } from '@/api/interface'
 
 @Component({
@@ -86,24 +89,19 @@ import { deviceApi } from '@/api/interface'
 export default class peerItem extends Vue {
   @Prop({ default: {} }) item!: Peer
 
-  private editedPeer: Peer = {
+  private editedPeer: PeerCreateOrUpdateRequest = {
     public_key: '',
 
-    url_safe_public_key: '',
+    private_key: '',
 
     preshared_key: '',
 
     allowed_ips: '',
 
-    last_handshake_time: '',
-
     persistent_keepalive_interval: '',
 
     endpoint: '',
 
-    receive_bytes: '',
-
-    transmit_bytes: '',
   }
 
   private drawer = false
@@ -128,15 +126,22 @@ export default class peerItem extends Vue {
   }
 
   private async savePeer(): Promise<void> {
-    await deviceApi.updateDevicePeer(this.$route.params.id, this.editedPeer.url_safe_public_key, {
+    await deviceApi.updateDevicePeer(this.$route.params.id, this.item.url_safe_public_key, {
       ...this.editedPeer,
-      allowed_ips: this.editedPeer.allowed_ips.split(',').map((item: string) => item.replace(/\n|\r/g, ''))
+      allowed_ips: peerItem.prepareAllowedIps(this.editedPeer.allowed_ips)
     })
 
     this.$message({
       type: 'success',
       message: 'Peer updated'
     })
+  }
+
+  private static prepareAllowedIps(item: string): string[] | string {
+    if (item.length > 0) {
+      return item.split(',').map((item: string) => item.replace(/\n|\r/g, ''))
+    }
+    return []
   }
 
   private async deletePeer(): Promise<void> {
@@ -173,6 +178,17 @@ export default class peerItem extends Vue {
 
   private openPeerModal() {
     this.editedPeer = JSON.parse(JSON.stringify(this.item))
+
+    if (!Object.keys(this.editedPeer).includes('private_key')) {
+      this.$set(this.editedPeer, 'private_key', '')
+    }
+
+    if (this.editedPeer.allowed_ips.length) {
+      this.editedPeer.allowed_ips = this.editedPeer.allowed_ips.join(',')
+    }else {
+      this.editedPeer.allowed_ips = ''
+    }
+
     this.drawer = true;
   }
 }
