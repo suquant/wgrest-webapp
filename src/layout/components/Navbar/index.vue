@@ -1,5 +1,8 @@
 <template>
-  <div class="navbar">
+  <div
+    class="navbar"
+    :class="{'navbar_opened': menuOpened}"
+  >
     <hamburger
       id="hamburger-container"
       :is-active="sidebar.opened"
@@ -24,7 +27,7 @@
         v-if="CurrentButton === NewAddButtonEnum.Device"
         @click="openModal('device')"
       >
-        New Device
+        <span class="add__button-navbar">New Device</span>
       </el-button>
       <el-button
         class="navbar__button"
@@ -33,7 +36,7 @@
         @click="openModal('peer')"
         v-if="CurrentButton === NewAddButtonEnum.Peer"
       >
-        New Peer
+        <span class="add__button-navbar">New Peer</span>
       </el-button>
 <!--      <el-dropdown-->
 <!--        class="avatar-container right-menu-item hover-effect"-->
@@ -100,6 +103,10 @@ export default class extends Vue {
     return UserModule.avatar
   }
 
+  get menuOpened() {
+    return AppModule.sidebar.opened
+  }
+
   private toggleSideBar() {
     AppModule.ToggleSideBar(false)
   }
@@ -154,6 +161,15 @@ export default class extends Vue {
   width: calc(100vw - 54px);
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  transition: all .2s ease-in-out;
+
+  &_opened {
+    width: calc(100vw - 210px);
+  }
+
+  @media (max-width: 850px) {
+    width: 100%;
+  }
 
   .hamburger-container {
     line-height: 46px;
@@ -177,6 +193,13 @@ export default class extends Vue {
     float: right;
     height: 100%;
     line-height: 50px;
+
+    @media (max-width: 850px) {
+      display: flex;
+      align-items: center;
+      float: right;
+      margin-right: 10px;
+    }
 
     &:focus {
       outline: none;
@@ -228,5 +251,15 @@ export default class extends Vue {
 
 .navbar__button {
   margin-right: 30px;
+
+  @media (max-width: 850px) {
+    margin-right: 0;
+  }
+}
+
+.add__button-navbar {
+  @media (max-width: 850px) {
+    display: none;
+  }
 }
 </style>
