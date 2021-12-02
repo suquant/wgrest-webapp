@@ -164,7 +164,7 @@ export default class interfaceItem extends Vue {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .text {
   font-size: 14px;
 }
@@ -178,6 +178,10 @@ export default class interfaceItem extends Vue {
 
   cursor: pointer;
   margin: 0 50px 50px 0;
+
+  @media (max-width: 850px) {
+    width: 100%;
+  }
 }
 
 .card__header {

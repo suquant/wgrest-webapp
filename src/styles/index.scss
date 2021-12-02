@@ -45,3 +45,23 @@ div:focus {
 .app-container {
   padding: 20px;
 }
+
+.el-drawer {
+  @media (max-width: 850px) {
+    width: 100% !important;
+  }
+}
+
+.el-drawer__header {
+  span {
+    @media (max-width: 850px) {
+      word-break: break-all !important;
+    }
+  }
+}
+
+.el-dialog {
+  @media (max-width: 850px) {
+    width: 100% !important;
+  }
+}

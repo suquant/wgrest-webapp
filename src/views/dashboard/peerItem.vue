@@ -212,6 +212,11 @@ export default class peerItem extends Vue {
 
   cursor: pointer;
   margin: 0 50px 50px 0;
+
+  @media (max-width: 850px) {
+    width: 100%;
+    margin-right: 0;
+  }
 }
 
 .card__header {

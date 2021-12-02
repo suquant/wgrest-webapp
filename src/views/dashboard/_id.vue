@@ -9,6 +9,7 @@
         v-model="queries.sort"
         placeholder="Sorting"
         @change="getPeerList"
+        class="peer__search-select"
       >
         <el-option
           v-for="item in options"
@@ -158,7 +159,7 @@ export default class extends Vue {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .peer__container {
   display: flex;
   flex-direction: column;
@@ -169,12 +170,21 @@ export default class extends Vue {
   margin-top: 20px;
   display: flex;
   align-items: center;
+
+  @media (max-width: 850px) {
+    flex-direction: column;
+  }
 }
 
 .peer__search {
   display: flex;
   align-items: center;
   margin-right: 50px;
+
+  @media (max-width: 850px) {
+    margin-right: 0;
+    margin-bottom: 30px;
+  }
 }
 
 .peer__list {
@@ -187,5 +197,15 @@ export default class extends Vue {
 
 .peer__search-input {
   width: 320px;
+
+  @media (max-width: 850px) {
+    width: 100%;
+  }
+}
+
+.peer__search-select {
+  @media (max-width: 850px) {
+    width: 100%;
+  }
 }
 </style>
