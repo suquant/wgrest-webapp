@@ -126,9 +126,14 @@ export default class peerItem extends Vue {
   }
 
   private async savePeer(): Promise<void> {
+    const savedItem = JSON.parse(JSON.stringify(this.editedPeer))
+    if (!savedItem.private_key) {
+      delete savedItem.private_key
+    }
+
     await deviceApi.updateDevicePeer(this.$route.params.id, this.item.url_safe_public_key, {
-      ...this.editedPeer,
-      allowed_ips: peerItem.prepareAllowedIps(this.editedPeer.allowed_ips)
+      ...savedItem,
+      allowed_ips: peerItem.prepareAllowedIps(savedItem.allowed_ips)
     })
 
     this.$message({

@@ -75,6 +75,10 @@ export default class DeviceModal extends Vue {
     await deviceApi.createDevicePeer(this.$route.params.id, newPeer)
     this.$emit('close')
     emitter.emit('updatePeer')
+    this.$message({
+      type: 'success',
+      message: 'New peer create'
+    })
   }
 }
 </script>
