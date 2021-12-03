@@ -65,3 +65,9 @@ div:focus {
     width: 100% !important;
   }
 }
+
+.el-message-box {
+  @media (max-width: 850px) {
+    width: 100%;
+  }
+}

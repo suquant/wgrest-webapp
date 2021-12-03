@@ -6,6 +6,7 @@
       placeholder="Name"
       v-model="newDeviceForm.name"
     ></el-input>
+    <p>Listen Port</p>
     <el-input-number
       class="device_form"
       placeholder="Listen Port"
@@ -16,6 +17,7 @@
       placeholder="Private Key"
       v-model="newDeviceForm.private_key"
     ></el-input>
+    <p>Firewall Mark</p>
     <el-input-number
       class="device_form"
       placeholder="Firewall Mark"
@@ -36,28 +38,44 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { deviceApi } from '@/api/interface'
+import {DeviceCreateOrUpdateRequest} from "wgrest/models/device-create-or-update-request";
+import {emitter} from "@/utils/emmiter";
 
 @Component({
   name: 'DeviceModal'
 })
 export default class DeviceModal extends Vue {
-  private newDeviceForm = {
-    name: '',
-    listen_port: 0,
-    private_key: '',
-    firewall_mark: 0,
-    networks: ''
+  private newDeviceForm: DeviceCreateOrUpdateRequest = {
+    name: null,
+    listen_port: null,
+    private_key: null,
+    firewall_mark: null,
+    networks: null
   }
 
   public async createDevice(): Promise<void> {
-    console.log(this.newDeviceForm)
-    const newDevice = {
-      ...this.newDeviceForm,
-      networks: this.newDeviceForm.networks.split(',')
+    const savedItem = JSON.parse(JSON.stringify(this.newDeviceForm))
+
+    Object.keys(savedItem).forEach(key => {
+      if (!savedItem[key]) {
+        delete savedItem[key]
+      }
+    })
+
+    if(Object.keys(savedItem).includes('networks')) {
+      savedItem.networks = savedItem.networks.split(',')
     }
 
-    console.log(newDevice)
-    await deviceApi.createDevice(newDevice)
+    await deviceApi.createDevice(savedItem)
+
+    this.$emit('close')
+
+    emitter.emit('updateDevice')
+
+    this.$message({
+      type: 'success',
+      message: 'New device create'
+    })
   }
 }
 </script>
