@@ -63,7 +63,7 @@ export default class DeviceModal extends Vue {
     })
 
     if(Object.keys(savedItem).includes('networks')) {
-      savedItem.networks = savedItem.networks.split(',')
+      savedItem.networks = savedItem.networks.replace(/\s+/g, '').split(',').filter(Boolean)
     }
 
     await deviceApi.createDevice(savedItem)
