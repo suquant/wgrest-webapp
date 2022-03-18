@@ -143,10 +143,7 @@ export default class peerItem extends Vue {
   }
 
   private static prepareAllowedIps(item: string): string[] | string {
-    if (item.length > 0) {
-      return item.split(',').map((item: string) => item.replace(/\n|\r/g, ''))
-    }
-    return []
+    return item.replace(/\s+/g, '').split(',').filter(Boolean)
   }
 
   private async deletePeer(): Promise<void> {

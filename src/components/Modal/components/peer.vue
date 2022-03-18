@@ -69,7 +69,7 @@ export default class DeviceModal extends Vue {
 
     const newPeer = {
       ...newPeerData,
-      allowed_ips: Object.keys(newPeerData).includes('allowed_ips') ? newPeerData.allowed_ips.split(',') : null
+      allowed_ips: Object.keys(newPeerData).includes('allowed_ips') ? newPeerData.allowed_ips.replace(/\s+/g, '').split(',').filter(Boolean) : null
     }
 
     await deviceApi.createDevicePeer(this.$route.params.id, newPeer)
